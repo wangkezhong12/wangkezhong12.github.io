@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="求$f(x)=x^4+x^3-x^2+1$的解 使用成功-失败法找出[c,d] 用黄金分割法找出x*，$ε=10^{-2}$  成功-失败法求区间[c,d]基本思想由单峰函数的性质可知，函数值在极小点左边严格下降，在右边严格上升。从某个初始点出发，沿函数值下降的方向前进，直至发现函数值上升为止。由两边高，中间低的三点，可确定极小点所在的初始区间。">
+<meta name="keywords" content="笔记,工程优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="成功-失败算法与黄金分割（0.618）算法">
+<meta property="og:url" content="http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/index.html">
+<meta property="og:site_name" content="Kezon Wang">
+<meta property="og:description" content="求$f(x)=x^4+x^3-x^2+1$的解 使用成功-失败法找出[c,d] 用黄金分割法找出x*，$ε=10^{-2}$  成功-失败法求区间[c,d]基本思想由单峰函数的性质可知，函数值在极小点左边严格下降，在右边严格上升。从某个初始点出发，沿函数值下降的方向前进，直至发现函数值上升为止。由两边高，中间低的三点，可确定极小点所在的初始区间。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/danfenghanshu.png">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/qianjinhoutui.png">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/%E9%BB%84%E9%87%91%E5%88%86%E5%89%B2.JPG">
+<meta property="og:updated_time" content="2016-01-19T05:25:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="成功-失败算法与黄金分割（0.618）算法">
+<meta name="twitter:description" content="求$f(x)=x^4+x^3-x^2+1$的解 使用成功-失败法找出[c,d] 用黄金分割法找出x*，$ε=10^{-2}$  成功-失败法求区间[c,d]基本思想由单峰函数的性质可知，函数值在极小点左边严格下降，在右边严格上升。从某个初始点出发，沿函数值下降的方向前进，直至发现函数值上升为止。由两边高，中间低的三点，可确定极小点所在的初始区间。">
+<meta name="twitter:image" content="http://7xorde.com1.z0.glb.clouddn.com/danfenghanshu.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>成功-失败算法与黄金分割（0.618）算法</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/gabithume">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2016/03/18/Scala构造顺序学习笔记/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover="$("#i-prev").toggle();" onmouseout="$("#i-prev").toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2015/12/23/CryptDB远程连接数据库服务器/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover="$("#i-next").toggle();" onmouseout="$("#i-next").toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover="$("#i-top").toggle();" onmouseout="$("#i-top").toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover="$("#i-share").toggle();" onmouseout="$("#i-share").toggle();" onclick="$("#share").toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&text=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&is_video=false&description=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=成功-失败算法与黄金分割（0.618）算法&body=Check out this article: http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&name=成功-失败算法与黄金分割（0.618）算法&description=&lt;h2 id=&#34;求-f-x-x-4-x-3-x-2-1-的解&#34;&gt;&lt;a href=&#34;#求-f-x-x-4-x-3-x-2-1-的解&#34; class=&#34;headerlink&#34; title=&#34;求$f(x)=x^4+x^3-x^2+1$的解&#34;&gt;&lt;/a&gt;求$f(x)=x^4+x^3-x^2+1$的解&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;使用成功-失败法找出[c,d]&lt;/li&gt;
+&lt;li&gt;用黄金分割法找出x*，$ε=10^{-2}$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;成功-失败法求区间-c-d&#34;&gt;&lt;a href=&#34;#成功-失败法求区间-c-d&#34; class=&#34;headerlink&#34; title=&#34;成功-失败法求区间[c,d]&#34;&gt;&lt;/a&gt;成功-失败法求区间[c,d]&lt;/h2&gt;&lt;h3 id=&#34;基本思想&#34;&gt;&lt;a href=&#34;#基本思想&#34; class=&#34;headerlink&#34; title=&#34;基本思想&#34;&gt;&lt;/a&gt;基本思想&lt;/h3&gt;&lt;p&gt;由单峰函数的性质可知，函数值在极小点左边严格下降，在右边严格上升。从某个初始点出发，沿函数值下降的方向前进，直至发现函数值上升为止。&lt;br&gt;由两边高，中间低的三点，可确定极小点所在的初始区间。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xorde.com1.z0.glb.clouddn.com/danfenghanshu.png&#34; alt=&#34;danfenghanshu&#34;&gt;&lt;br&gt;"><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#求-f-x-x-4-x-3-x-2-1-的解"><span class="toc-number">1.</span> <span class="toc-text">求$f(x)=x^4+x^3-x^2+1$的解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#成功-失败法求区间-c-d"><span class="toc-number">2.</span> <span class="toc-text">成功-失败法求区间[c,d]</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本思想"><span class="toc-number">2.1.</span> <span class="toc-text">基本思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#算法流程"><span class="toc-number">2.2.</span> <span class="toc-text">算法流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用黄金分割法找出x-，-ε-10-2"><span class="toc-number">3.</span> <span class="toc-text">用黄金分割法找出x*，$ε=10^{-2}$</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#算法流程-1"><span class="toc-number">3.1.</span> <span class="toc-text">算法流程</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index width mx-auto px2 my4">
+        
+        <article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        成功-失败算法与黄金分割（0.618）算法
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <span itemprop="name">Kezon Wang</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2015-12-26T08:03:11.000Z" itemprop="datePublished">2015-12-26</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/工程优化/">工程优化</a>, <a class="tag-link" href="/tags/笔记/">笔记</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="求-f-x-x-4-x-3-x-2-1-的解"><a href="#求-f-x-x-4-x-3-x-2-1-的解" class="headerlink" title="求$f(x)=x^4+x^3-x^2+1$的解"></a>求$f(x)=x^4+x^3-x^2+1$的解</h2><ol>
+<li>使用成功-失败法找出[c,d]</li>
+<li>用黄金分割法找出x*，$ε=10^{-2}$</li>
+</ol>
+<h2 id="成功-失败法求区间-c-d"><a href="#成功-失败法求区间-c-d" class="headerlink" title="成功-失败法求区间[c,d]"></a>成功-失败法求区间[c,d]</h2><h3 id="基本思想"><a href="#基本思想" class="headerlink" title="基本思想"></a>基本思想</h3><p>由单峰函数的性质可知，函数值在极小点左边严格下降，在右边严格上升。从某个初始点出发，沿函数值下降的方向前进，直至发现函数值上升为止。<br>由两边高，中间低的三点，可确定极小点所在的初始区间。</p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/danfenghanshu.png" alt="danfenghanshu"><br><a id="more"></a></p>
+<h3 id="算法流程"><a href="#算法流程" class="headerlink" title="算法流程"></a>算法流程</h3><ol>
+<li>选定初始点a 和步长h;</li>
+<li>计算并比较$f(a)$和$f(a+h)$；有前进(1)和后退(2)两种情况：<br>（1）前进计算：若$f(a)≥f(a+h)$，则步长加倍，计算$f(a+3h)$。若$f(a+h) ≤f(a+3h)$，令 a1=a, a2=a+3h, 停止运算；否则将步长加倍，并重复上述运算。<br>（2）后退计算：若$f(a)＜f(a+h)$，则将步长改为－h/4。计算$f(a－h)$, 若$f(a－h) ≥ f(a)$，令 a1=a－h, a2=a+h, 停止运算；否则将步长加倍，继续后退。</li>
+</ol>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/qianjinhoutui.png" alt="qianjinhoutui"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">获取区间</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span>  <span class="keyword">double</span>[] getRegionOfSearch(<span class="keyword">double</span> a, <span class="keyword">double</span> h)&#123;</span><br><span class="line">    <span class="keyword">double</span> a1 = a;</span><br><span class="line">    <span class="keyword">double</span> a2 = a + h;</span><br><span class="line">    <span class="keyword">double</span> f1 = getfx(a1);</span><br><span class="line">    <span class="keyword">double</span> f2 = getfx(a2);</span><br><span class="line">    <span class="keyword">double</span>[] region = <span class="keyword">new</span> <span class="keyword">double</span>[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (f2 &lt; f1)&#123; <span class="comment">//如果f(a)&gt;f(a+h),则步长加倍</span></span><br><span class="line">        region = compareFxAdvance(a1,a2,h,f1,f2);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123; <span class="comment">//后退</span></span><br><span class="line">        h = -(h/<span class="number">4</span>);</span><br><span class="line">        region = compareFxRetreat(a1,a2,h,f1,f2);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> region;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">前进比较f1和f2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">double</span>[] compareFxAdvance(<span class="keyword">double</span> a1,<span class="keyword">double</span> a2,<span class="keyword">double</span> h,<span class="keyword">double</span> f1,<span class="keyword">double</span> f2)&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">double</span>[] region = <span class="keyword">new</span> <span class="keyword">double</span>[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    h = <span class="number">2</span> * h;</span><br><span class="line">    a2 = a2 + h;</span><br><span class="line">    f1 = f2;</span><br><span class="line">    f2 = getfx(a2);</span><br><span class="line">    <span class="keyword">while</span> (f2&lt;f1)</span><br><span class="line">    &#123;</span><br><span class="line">        a1 = a2 - h;</span><br><span class="line">        h = <span class="number">2</span> * h;</span><br><span class="line">        a2 = a2 + h;</span><br><span class="line">        f1 = f2;</span><br><span class="line">        f2 = getfx(a2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    region[<span class="number">0</span>] = a1;</span><br><span class="line">    region[<span class="number">1</span>] = a2;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> region;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">后退比较f1和f2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">double</span>[] compareFxRetreat(<span class="keyword">double</span> a1,<span class="keyword">double</span> a2,<span class="keyword">double</span> h,<span class="keyword">double</span> f1,<span class="keyword">double</span> f2)&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">double</span>[] region = <span class="keyword">new</span> <span class="keyword">double</span>[<span class="number">2</span>];</span><br><span class="line">    a1 = a1 + h;</span><br><span class="line">    f2 = f1;</span><br><span class="line">    f1 = getfx(a1);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(f2&gt;=f1)&#123;</span><br><span class="line">        a2 = a1 - h;</span><br><span class="line">        h = h + h;</span><br><span class="line">        a1 = a1 + h;</span><br><span class="line">        f2 = f1;</span><br><span class="line">        f1 = getfx(a1);</span><br><span class="line">    &#125;</span><br><span class="line">    region[<span class="number">0</span>] = a1;</span><br><span class="line">    region[<span class="number">1</span>] = a2;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> region;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//f(x)的计算公式</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">getfx</span><span class="params">(<span class="keyword">double</span> x)</span></span>&#123;</span><br><span class="line">    <span class="keyword">double</span> fx = <span class="number">0</span>;</span><br><span class="line">    fx = Math.pow(x,<span class="number">4</span>) + Math.pow(x,<span class="number">3</span>) - Math.pow(x,<span class="number">2</span>) + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> fx;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上4个方法分别为getRgionOfSearch（）参数为起始点a和步长h，compareFxAdvance（）和compareFxRetreat分别实现了前进运算和后退运算，getfx（）为计算f（x）的结果。</p>
+<h2 id="用黄金分割法找出x-，-ε-10-2"><a href="#用黄金分割法找出x-，-ε-10-2" class="headerlink" title="用黄金分割法找出x*，$ε=10^{-2}$"></a>用黄金分割法找出x*，$ε=10^{-2}$</h2><h3 id="算法流程-1"><a href="#算法流程-1" class="headerlink" title="算法流程"></a>算法流程</h3><p><img src="http://7xorde.com1.z0.glb.clouddn.com/%E9%BB%84%E9%87%91%E5%88%86%E5%89%B2.JPG" alt="huangjinfenge"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    黄金分割法求x*</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">getGoldenSectionRes</span><span class="params">(<span class="keyword">double</span> a,<span class="keyword">double</span> b,<span class="keyword">double</span> epsilon)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">double</span> res = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">double</span> x1 = a + <span class="number">0.382</span>*(b - a);</span><br><span class="line">        <span class="keyword">double</span> x2 = a + b - x1;</span><br><span class="line">        <span class="keyword">double</span> R = getfx(x1);</span><br><span class="line">        <span class="keyword">double</span> G = getfx(x2);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span>(R&gt;G)&#123;</span><br><span class="line">                a = x1;</span><br><span class="line">                <span class="keyword">if</span> (Math.abs((b-a)) &lt; epsilon)</span><br><span class="line">                &#123;</span><br><span class="line">                    res = (a+b)/<span class="number">2</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    x1 = x2;</span><br><span class="line">                    x2 = a + <span class="number">0.618</span> * (b - a);</span><br><span class="line">                    R = G;</span><br><span class="line">                    G = getfx(x2);</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                b = x2;</span><br><span class="line">                <span class="keyword">if</span> (Math.abs((b-a)) &lt; epsilon)&#123;</span><br><span class="line">                    res = (a + b)/<span class="number">2</span> ;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    x2 = x1;</span><br><span class="line">                    x1= a + <span class="number">0.382</span> * (b - a);</span><br><span class="line">                    G = R ;wk</span><br><span class="line">                    R = getfx(x1);</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>方法getGoldenSectionRes（）的参数分别为使用成功-失败法计算出的区间（c,d）的初始值和结束值，以及使用的ε的值，本程序中取$10^-2$  ,返回结果res。</p>
+<p>完整代码放在了我的github上：<a href="https://github.com/wangkezhong12/GongchengYouhua" target="_blank" rel="noopener">https://github.com/wangkezhong12/GongchengYouhua</a></p>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/gabithume">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#求-f-x-x-4-x-3-x-2-1-的解"><span class="toc-number">1.</span> <span class="toc-text">求$f(x)=x^4+x^3-x^2+1$的解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#成功-失败法求区间-c-d"><span class="toc-number">2.</span> <span class="toc-text">成功-失败法求区间[c,d]</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本思想"><span class="toc-number">2.1.</span> <span class="toc-text">基本思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#算法流程"><span class="toc-number">2.2.</span> <span class="toc-text">算法流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用黄金分割法找出x-，-ε-10-2"><span class="toc-number">3.</span> <span class="toc-text">用黄金分割法找出x*，$ε=10^{-2}$</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#算法流程-1"><span class="toc-number">3.1.</span> <span class="toc-text">算法流程</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&text=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&is_video=false&description=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=成功-失败算法与黄金分割（0.618）算法&body=Check out this article: http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&title=成功-失败算法与黄金分割（0.618）算法"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://kezon.wang/2015/12/26/成功-失败算法与黄金分割（0-618）算法/&name=成功-失败算法与黄金分割（0.618）算法&description=&lt;h2 id=&#34;求-f-x-x-4-x-3-x-2-1-的解&#34;&gt;&lt;a href=&#34;#求-f-x-x-4-x-3-x-2-1-的解&#34; class=&#34;headerlink&#34; title=&#34;求$f(x)=x^4+x^3-x^2+1$的解&#34;&gt;&lt;/a&gt;求$f(x)=x^4+x^3-x^2+1$的解&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;使用成功-失败法找出[c,d]&lt;/li&gt;
+&lt;li&gt;用黄金分割法找出x*，$ε=10^{-2}$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;成功-失败法求区间-c-d&#34;&gt;&lt;a href=&#34;#成功-失败法求区间-c-d&#34; class=&#34;headerlink&#34; title=&#34;成功-失败法求区间[c,d]&#34;&gt;&lt;/a&gt;成功-失败法求区间[c,d]&lt;/h2&gt;&lt;h3 id=&#34;基本思想&#34;&gt;&lt;a href=&#34;#基本思想&#34; class=&#34;headerlink&#34; title=&#34;基本思想&#34;&gt;&lt;/a&gt;基本思想&lt;/h3&gt;&lt;p&gt;由单峰函数的性质可知，函数值在极小点左边严格下降，在右边严格上升。从某个初始点出发，沿函数值下降的方向前进，直至发现函数值上升为止。&lt;br&gt;由两边高，中间低的三点，可确定极小点所在的初始区间。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xorde.com1.z0.glb.clouddn.com/danfenghanshu.png&#34; alt=&#34;danfenghanshu&#34;&gt;&lt;br&gt;"><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick="$("#toc-footer").toggle();return false;"><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick="$("#share-footer").toggle();return false;"><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick="$("#nav-footer").toggle();return false;"><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 Kezon Wang
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/gabithume">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-86660611-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Disqus Comments -->
+
+

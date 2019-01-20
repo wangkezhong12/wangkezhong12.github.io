@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="CryptDB是麻省理工学院计算机科学和人工智能实验室（CSAIL）的一个项目，该数据库软件允许用户查询加密的SQL数据库，而且能在不解密储存信息的情况下返回结果。随着大数据时代的到来，各行各业的数据量积累基本上超出本地服务器的负载，因此很多的项目采用公有云来对数据进行云存储，但是像医药，金融或涉及技术等公司机密数据的信息，存储在公有云上，我们不能保证公有云的提供商不窥探我们的数据，数据云存储安全">
+<meta name="keywords" content="CryptDB,MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CryptDB本地安装与使用">
+<meta property="og:url" content="http://kezon.wang/2015/12/11/CryptDB本地安装与使用/index.html">
+<meta property="og:site_name" content="Kezon Wang">
+<meta property="og:description" content="CryptDB是麻省理工学院计算机科学和人工智能实验室（CSAIL）的一个项目，该数据库软件允许用户查询加密的SQL数据库，而且能在不解密储存信息的情况下返回结果。随着大数据时代的到来，各行各业的数据量积累基本上超出本地服务器的负载，因此很多的项目采用公有云来对数据进行云存储，但是像医药，金融或涉及技术等公司机密数据的信息，存储在公有云上，我们不能保证公有云的提供商不窥探我们的数据，数据云存储安全">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/cryptdbdiag.jpg">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/installcryptdb.JPG">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/installcryptdbsuccess.JPG">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/proxyqidong.JPG">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/3307chuangjiancharu.JPG">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/chuanjianyucharuchongxie.JPG">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/3306chakan.JPG">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/cryptdbjiagou.JPG">
+<meta property="og:updated_time" content="2015-12-25T14:53:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CryptDB本地安装与使用">
+<meta name="twitter:description" content="CryptDB是麻省理工学院计算机科学和人工智能实验室（CSAIL）的一个项目，该数据库软件允许用户查询加密的SQL数据库，而且能在不解密储存信息的情况下返回结果。随着大数据时代的到来，各行各业的数据量积累基本上超出本地服务器的负载，因此很多的项目采用公有云来对数据进行云存储，但是像医药，金融或涉及技术等公司机密数据的信息，存储在公有云上，我们不能保证公有云的提供商不窥探我们的数据，数据云存储安全">
+<meta name="twitter:image" content="http://7xorde.com1.z0.glb.clouddn.com/cryptdbdiag.jpg">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>CryptDB本地安装与使用</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/gabithume">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2015/12/18/hexo常见问题解决方法（1）/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover="$("#i-prev").toggle();" onmouseout="$("#i-prev").toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2015/11/28/不再为上不了Google发愁/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover="$("#i-next").toggle();" onmouseout="$("#i-next").toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover="$("#i-top").toggle();" onmouseout="$("#i-top").toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover="$("#i-share").toggle();" onmouseout="$("#i-share").toggle();" onclick="$("#share").toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&text=CryptDB本地安装与使用"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&is_video=false&description=CryptDB本地安装与使用"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CryptDB本地安装与使用&body=Check out this article: http://kezon.wang/2015/12/11/CryptDB本地安装与使用/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&name=CryptDB本地安装与使用&description=&lt;p&gt;CryptDB是麻省理工学院计算机科学和人工智能实验室（CSAIL）的一个项目，该数据库软件允许用户查询加密的SQL数据库，而且能在不解密储存信息的情况下返回结果。随着大数据时代的到来，各行各业的数据量积累基本上超出本地服务器的负载，因此很多的项目采用公有云来对数据进行云存储，但是像医药，金融或涉及技术等公司机密数据的信息，存储在公有云上，我们不能保证公有云的提供商不窥探我们的数据，数据云存储安全的重要性也就可见一斑了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xorde.com1.z0.glb.clouddn.com/cryptdbdiag.jpg&#34; alt=&#34;cryptdbdiag&#34;&gt;&lt;br&gt;"><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装准备"><span class="toc-number">1.</span> <span class="toc-text">安装准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#下载安装CryptDB"><span class="toc-number">2.</span> <span class="toc-text">下载安装CryptDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用CryptDB"><span class="toc-number">3.</span> <span class="toc-text">使用CryptDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改CryptDB"><span class="toc-number">4.</span> <span class="toc-text">修改CryptDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index width mx-auto px2 my4">
+        
+        <article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        CryptDB本地安装与使用
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <span itemprop="name">Kezon Wang</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2015-12-11T14:41:55.000Z" itemprop="datePublished">2015-12-11</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/CryptDB/">CryptDB</a>, <a class="tag-link" href="/tags/MySQL/">MySQL</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>CryptDB是麻省理工学院计算机科学和人工智能实验室（CSAIL）的一个项目，该数据库软件允许用户查询加密的SQL数据库，而且能在不解密储存信息的情况下返回结果。随着大数据时代的到来，各行各业的数据量积累基本上超出本地服务器的负载，因此很多的项目采用公有云来对数据进行云存储，但是像医药，金融或涉及技术等公司机密数据的信息，存储在公有云上，我们不能保证公有云的提供商不窥探我们的数据，数据云存储安全的重要性也就可见一斑了。</p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/cryptdbdiag.jpg" alt="cryptdbdiag"><br><a id="more"></a><br>CryptDB的原理大家可以到其官网上查阅相关的论文。这是官方网站的地址——<a href="https://css.csail.mit.edu/cryptdb/" target="_blank" rel="noopener">https://css.csail.mit.edu/cryptdb/</a>现版本的CryptDB可以直接在Ubuntu12.04和13.04上运行，如果需要在Ubuntu14.04上使用，需要修改bison到3.0以下，为了不折腾，我使用的是Ubuntu12.4.02LTS(x64)。</p>
+<h2 id="安装准备"><a href="#安装准备" class="headerlink" title="安装准备"></a>安装准备</h2><p>现版本的CryptDB不再需要你自己一步一步安装，可以直接通过scripts文件夹下的install.rb 文件进行安装的自动执行，所以，在进行安装之前需要你手动安装ruby，这里可以直接使用apt-get指令进行安装。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install ruby1.8</span><br></pre></td></tr></table></figure></p>
+<p>除此之外，因为CryptDB是基于MySQL-proxy,所以CryptDB是通过lua脚本进行调用执行的，因此还需要安装lua，这里我们用的是lua5.1版本，同样使用apt-get指令进行安装。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install lua5.1</span><br></pre></td></tr></table></figure></p>
+<h2 id="下载安装CryptDB"><a href="#下载安装CryptDB" class="headerlink" title="下载安装CryptDB"></a>下载安装CryptDB</h2><p>安装完Ruby和lua之后，就可以直接进行CryptDB的下载安装了。CryptDB的源码存放在github上，我们使用git将其下载在/home/‘user’目录下，这里的user是你所使用的用户名，我的是kezon，后面的将直接使用/home/kezon来表示。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git@github.com:CryptDB/cryptdb.git</span><br></pre></td></tr></table></figure></p>
+<p>下载完成之后进行安装。进入CryptDB目录，注意，CryptDB的安装需要root权限。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">su</span><br><span class="line"><span class="comment">#你的root密码</span></span><br><span class="line">*****</span><br><span class="line">scripts/install.rb .</span><br></pre></td></tr></table></figure></p>
+<p>最后一条语句的最后一个‘.’是指当前目录，如果你不是在CryptDB目录下运行，你需要将其改成CryptDB的路径。</p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/installcryptdb.JPG" alt="installcryptdb"></p>
+<p>回车之后，程序会自动执行，进行安装，安装时间较长。在进行安装时，CryptDB会通过install.rb文件中的get_pkgs()方法自动检查依赖并提醒你安装，一路‘Y’就行了，如果你在此之前没有安装MySQL，这里同样会提示你进行安装，你可以将MySQL的root用户密码设置成CryptDB默认的‘letmein’，也可以设置成你喜欢的，后边再对CryptDB进行修改。如果你的系统中已经安装了MySQL并且设置了root密码，我们在安装完成CryptDB之后对其相应文件进行修改就行了，过程在下文再说。如果安装成功，你会看到下面这个画面。</p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/installcryptdbsuccess.JPG" alt="cryptdbinstallsuccess"></p>
+<h2 id="使用CryptDB"><a href="#使用CryptDB" class="headerlink" title="使用CryptDB"></a>使用CryptDB</h2><p>安装完成之后，我们就可以使用了，这里使用其中的一种方法进行讲解。打开终端，并切换到root账户下。并设置你的EDBDIR变量。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">su</span><br><span class="line"><span class="comment">#你的root密码</span></span><br><span class="line">*****</span><br><span class="line"><span class="built_in">export</span> EDBDIR=/full/path/to/cryptdb</span><br></pre></td></tr></table></figure></p>
+<p>完成之后检查一下有没有设置成功，以免后面出现错误。注意，<strong>下边这条指令需要在root权限下运行。</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#我的/path/to/cryptdb路径为/home/kezon/cryptdb</span></span><br><span class="line">/path/to/cryptdb/bins/proxy-bin/bin/mysql-proxy         \</span><br><span class="line">                       --plugins=proxy --event-threads=4             \</span><br><span class="line">                       --max-open-files=1024                         \</span><br><span class="line">                       --proxy-lua-script=<span class="variable">$EDBDIR</span>/mysqlproxy/wrapper.lua \</span><br><span class="line">                       --proxy-address=127.0.0.1:3307                \</span><br><span class="line">                       --proxy-backend-addresses=localhost:3306</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/proxyqidong.JPG" alt="proxyqidong"></p>
+<p>之后，打开另一个终端，proxy运行的终端窗口不要关闭。运行下面的语句。proxy会一直在后台运行并rewrite我们在这个窗口中输入的SQL语句。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -pletmein -h 127.0.0.1 -P 3307</span><br></pre></td></tr></table></figure></p>
+<p>我们在此窗口下创建database命名为cryptdbtest，并创建user表，该表拥有userid和username两列。通过insert语句插入一条记录为(2,’kezon’)，语句执行如下图所示。</p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/3307chuangjiancharu.JPG" alt="3307chaungjianyucharu"></p>
+<p>proxy窗口将对相应的SQL语句进行重写，如下图所示。</p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/chuanjianyucharuchongxie.JPG" alt="chuangjianyucharuchongxie"></p>
+<p>然后通过3306端口正常打开MySQL进行查看，可以看到，数据库的名称是没有加密的，但是进去之后可以看到表名是加密过的，我们通国select语句查询到的结果也是加密过的密文。到此本地安装实验结束。</p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/3306chakan.JPG" alt="3306chakan"></p>
+<h2 id="修改CryptDB"><a href="#修改CryptDB" class="headerlink" title="修改CryptDB"></a>修改CryptDB</h2><p>前面说到如果机器上已经安装有MySQL并且设置的root用户密码并非’letmein’，我们可以对CryptDB中相关的文件进行修改，文件目录如下。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Tests: <span class="built_in">test</span>/test_utils.hh</span><br><span class="line">Shell: main/cdb_test.cc</span><br><span class="line">Proxy: mysqlproxy/wrapper.lua</span><br></pre></td></tr></table></figure></p>
+<p>将文件中的相关用户名和密码修改过后，回到CryptDB目录进行make操作，之后使用自己设定的MySQL用户和密码就行了。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/cryptdbjiagou.JPG" alt="cryptdbjiagou"></p>
+<p>CryptDB的整体架构如上图所示，其中的UDFs是很重要的一部分，而且CryptDB为了达到使用的灵活性，UDF是允许使用者按照自己的需求更改的，即/full/path/to/cryptdb/udf/udf.cc可以进行修改，修改完成之后，需要运行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make install</span><br></pre></td></tr></table></figure></p>
+<p>指令，进行重新编译再使用。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文介绍了CryptDB的本地安装及使用，CryptDB目前已经被很多企业与组织认可，SAP AG,Google及微软都针对其生产出了相应的系统或改进型产品，但是，CryptDB的先天缺陷在于对TPC-H的支持并不完整，而其替代产品monomi已经解决了相关问题，大家可以去进行相关了解。</p>
+<p>本文是对CryptDB本地使用的讲解，并不包含实际使用中远程连接MySQL服务器，如果你只需要进行相关的本地数据加密存储实验，本文中的内容已经足够，实际生产环境中的使用我将在之后的博客中更新。</p>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/gabithume">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装准备"><span class="toc-number">1.</span> <span class="toc-text">安装准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#下载安装CryptDB"><span class="toc-number">2.</span> <span class="toc-text">下载安装CryptDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用CryptDB"><span class="toc-number">3.</span> <span class="toc-text">使用CryptDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改CryptDB"><span class="toc-number">4.</span> <span class="toc-text">修改CryptDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&text=CryptDB本地安装与使用"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&is_video=false&description=CryptDB本地安装与使用"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CryptDB本地安装与使用&body=Check out this article: http://kezon.wang/2015/12/11/CryptDB本地安装与使用/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&title=CryptDB本地安装与使用"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://kezon.wang/2015/12/11/CryptDB本地安装与使用/&name=CryptDB本地安装与使用&description=&lt;p&gt;CryptDB是麻省理工学院计算机科学和人工智能实验室（CSAIL）的一个项目，该数据库软件允许用户查询加密的SQL数据库，而且能在不解密储存信息的情况下返回结果。随着大数据时代的到来，各行各业的数据量积累基本上超出本地服务器的负载，因此很多的项目采用公有云来对数据进行云存储，但是像医药，金融或涉及技术等公司机密数据的信息，存储在公有云上，我们不能保证公有云的提供商不窥探我们的数据，数据云存储安全的重要性也就可见一斑了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xorde.com1.z0.glb.clouddn.com/cryptdbdiag.jpg&#34; alt=&#34;cryptdbdiag&#34;&gt;&lt;br&gt;"><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick="$("#toc-footer").toggle();return false;"><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick="$("#share-footer").toggle();return false;"><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick="$("#nav-footer").toggle();return false;"><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 Kezon Wang
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/gabithume">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-86660611-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Disqus Comments -->
+
+

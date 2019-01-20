@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="连续调用3次fork(),共可以产生多少个进程？进程包括代码、数据和分配给进程的资源。fork()函数通过系统调用复制一个与原来进程几乎完全相同的进程。一个进程如果调用了fork()函数后，系统会先给新的进程分配资源，例如存储数据和代码的空间，然后把原来的所有值都复制到新的进程中个，只有少数值与原来的进程的值不同，相当于克隆了一个自己。 12345678910111213//代码1-1#inclu">
+<meta name="keywords" content="笔记,Linux,fork">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Linux  fork()的两个问题">
+<meta property="og:url" content="http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/index.html">
+<meta property="og:site_name" content="Kezon Wang">
+<meta property="og:description" content="连续调用3次fork(),共可以产生多少个进程？进程包括代码、数据和分配给进程的资源。fork()函数通过系统调用复制一个与原来进程几乎完全相同的进程。一个进程如果调用了fork()函数后，系统会先给新的进程分配资源，例如存储数据和代码的空间，然后把原来的所有值都复制到新的进程中个，只有少数值与原来的进程的值不同，相当于克隆了一个自己。 12345678910111213//代码1-1#inclu">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://7xorde.com1.z0.glb.clouddn.com/forktree.gif">
+<meta property="og:updated_time" content="2015-12-26T08:30:34.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于Linux  fork()的两个问题">
+<meta name="twitter:description" content="连续调用3次fork(),共可以产生多少个进程？进程包括代码、数据和分配给进程的资源。fork()函数通过系统调用复制一个与原来进程几乎完全相同的进程。一个进程如果调用了fork()函数后，系统会先给新的进程分配资源，例如存储数据和代码的空间，然后把原来的所有值都复制到新的进程中个，只有少数值与原来的进程的值不同，相当于克隆了一个自己。 12345678910111213//代码1-1#inclu">
+<meta name="twitter:image" content="http://7xorde.com1.z0.glb.clouddn.com/forktree.gif">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>关于Linux  fork()的两个问题</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+</head>
+
+<body>
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/gabithume">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2015/12/23/CryptDB远程连接数据库服务器/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover="$("#i-prev").toggle();" onmouseout="$("#i-prev").toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2015/12/18/hexo常见问题解决方法（1）/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover="$("#i-next").toggle();" onmouseout="$("#i-next").toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover="$("#i-top").toggle();" onmouseout="$("#i-top").toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover="$("#i-share").toggle();" onmouseout="$("#i-share").toggle();" onclick="$("#share").toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&text=关于Linux  fork()的两个问题"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&is_video=false&description=关于Linux  fork()的两个问题"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=关于Linux  fork()的两个问题&body=Check out this article: http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&name=关于Linux  fork()的两个问题&description=&lt;h2 id=&#34;连续调用3次fork-共可以产生多少个进程？&#34;&gt;&lt;a href=&#34;#连续调用3次fork-共可以产生多少个进程？&#34; class=&#34;headerlink&#34; title=&#34;连续调用3次fork(),共可以产生多少个进程？&#34;&gt;&lt;/a&gt;连续调用3次fork(),共可以产生多少个进程？&lt;/h2&gt;&lt;p&gt;进程包括代码、数据和分配给进程的资源。fork()函数通过系统调用复制一个与原来进程几乎完全相同的进程。一个进程如果调用了fork()函数后，系统会先给新的进程分配资源，例如存储数据和代码的空间，然后把原来的所有值都复制到新的进程中个，只有少数值与原来的进程的值不同，相当于克隆了一个自己。&lt;/p&gt;
+&lt;figure class=&#34;highlight c++&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;gutter&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;13&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;comment&#34;&gt;//代码1-1&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;#&lt;span class=&#34;meta-keyword&#34;&gt;include&lt;/span&gt;&lt;span class=&#34;meta-string&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;#&lt;span class=&#34;meta-keyword&#34;&gt;include&lt;/span&gt;&lt;span class=&#34;meta-string&#34;&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;#&lt;span class=&#34;meta-keyword&#34;&gt;include&lt;/span&gt;&lt;span class=&#34;meta-string&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;function&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;title&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;params&#34;&gt;(&lt;span class=&#34;keyword&#34;&gt;void&lt;/span&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;function&#34;&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;int&lt;/span&gt; i;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;for&lt;/span&gt; (i = &lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span class=&#34;number&#34;&gt;3&lt;/span&gt;; i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        fork();&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        &lt;span class=&#34;built_in&#34;&gt;printf&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&#34;-&#34;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;按照&lt;em&gt;代码1-1&lt;/em&gt;所示，通过for循环，进行了3次fork，如下图所示，假设父进程为p3224，通过fork函数fork一次之后有父进程p3224与子进程p3225，在完成fork之后，系统通过pid来识别哪一个是子进程，哪一个是父进程。以此类推，经过3次fork之后，将产生8个进程。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xorde.com1.z0.glb.clouddn.com/forktree.gif&#34; alt=&#34;forktree&#34;&gt;&lt;br&gt;"><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#连续调用3次fork-共可以产生多少个进程？"><span class="toc-number">1.</span> <span class="toc-text">连续调用3次fork(),共可以产生多少个进程？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码1-1和代码1-2各输出多少个“-”？"><span class="toc-number">2.</span> <span class="toc-text">代码1-1和代码1-2各输出多少个“-”？</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index width mx-auto px2 my4">
+        
+        <article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        关于Linux  fork()的两个问题
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+        <span itemprop="name">Kezon Wang</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2015-12-18T14:54:00.000Z" itemprop="datePublished">2015-12-18</time>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/fork/">fork</a>, <a class="tag-link" href="/tags/笔记/">笔记</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="连续调用3次fork-共可以产生多少个进程？"><a href="#连续调用3次fork-共可以产生多少个进程？" class="headerlink" title="连续调用3次fork(),共可以产生多少个进程？"></a>连续调用3次fork(),共可以产生多少个进程？</h2><p>进程包括代码、数据和分配给进程的资源。fork()函数通过系统调用复制一个与原来进程几乎完全相同的进程。一个进程如果调用了fork()函数后，系统会先给新的进程分配资源，例如存储数据和代码的空间，然后把原来的所有值都复制到新的进程中个，只有少数值与原来的进程的值不同，相当于克隆了一个自己。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//代码1-1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">        fork();</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"-"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>按照<em>代码1-1</em>所示，通过for循环，进行了3次fork，如下图所示，假设父进程为p3224，通过fork函数fork一次之后有父进程p3224与子进程p3225，在完成fork之后，系统通过pid来识别哪一个是子进程，哪一个是父进程。以此类推，经过3次fork之后，将产生8个进程。</p>
+<p><img src="http://7xorde.com1.z0.glb.clouddn.com/forktree.gif" alt="forktree"><br><a id="more"></a></p>
+<h2 id="代码1-1和代码1-2各输出多少个“-”？"><a href="#代码1-1和代码1-2各输出多少个“-”？" class="headerlink" title="代码1-1和代码1-2各输出多少个“-”？"></a>代码1-1和代码1-2各输出多少个“-”？</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//代码1-2</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">        fork();</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"-\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>仔细对比<em>代码1-1</em>和<em>代码1-2</em>，可以发现代码1-2在输出语句中多了一个“\n”，这个问题考察的其实是printf()函数的缓冲区问题和fork()的基本原理。在第一个问题中我们可以看到，通过3次fork之后，一共产生8个进程，在进程fork的同时，也就执行了printf语句，这里涉及到printf的缓冲区问题。</p>
+<p><strong>printf()缓冲区问题：</strong> 用printf()输出时是先输出到缓冲区，当出现以下情况时再从缓冲区送到屏幕上。</p>
+<ol>
+<li>使用fflush（stdout）强制刷新。</li>
+<li>缓冲区已满。</li>
+<li>scanf()要在缓冲区里取数据时会先将缓冲区刷新。</li>
+<li>\n,\r进入缓冲区时。</li>
+<li>线程结束的时候，如果该线程里也有printf(….);</li>
+<li>程序结束时。</li>
+</ol>
+<p>由<em>代码1-2</em>中可以看到的不同是printf()语句中加入了“\n”，所以，相对于<em>代码1-1</em>，<em>代码1-2</em> 中的printf()语句每当进行一次fork时就会将“-”打印到屏幕上，也就是进行第一次fork时打印2个“-”，第二次fork时打印4个“-”，第三次fork时打印8个“-”，则<em>代码1-2</em>最后打印到屏幕上的“-”数目为2+4+8=14个。</p>
+<p>由于printf()存在缓冲区，所以<em>代码1-1</em>只有执行到程序结束时才会将缓冲区中的“-”打印到屏幕上，则进行第一次fork时，产生的两个进程的缓冲区中各存有一个“-”，在进行第二次fork时，缓冲区中的内容同样被复制，所以，产生的4个进程中的每一个进程的缓冲区中存放有两个“-”，则在进行完第三次fork，执行完成程序时，生成的8个进程中每一个进程的缓冲区中都有3个“-”，在第三次fork完成后，程序执行结束，会将缓冲区中的内容打印到屏幕上，因而会得到3*8=24个“-”。</p>
+
+  </div>
+</article>
+
+
+
+    </div>
+    
+      <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/gabithume">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#连续调用3次fork-共可以产生多少个进程？"><span class="toc-number">1.</span> <span class="toc-text">连续调用3次fork(),共可以产生多少个进程？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码1-1和代码1-2各输出多少个“-”？"><span class="toc-number">2.</span> <span class="toc-text">代码1-1和代码1-2各输出多少个“-”？</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&text=关于Linux  fork()的两个问题"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&is_video=false&description=关于Linux  fork()的两个问题"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=关于Linux  fork()的两个问题&body=Check out this article: http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&title=关于Linux  fork()的两个问题"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://kezon.wang/2015/12/18/关于Linux-fork-的两个问题/&name=关于Linux  fork()的两个问题&description=&lt;h2 id=&#34;连续调用3次fork-共可以产生多少个进程？&#34;&gt;&lt;a href=&#34;#连续调用3次fork-共可以产生多少个进程？&#34; class=&#34;headerlink&#34; title=&#34;连续调用3次fork(),共可以产生多少个进程？&#34;&gt;&lt;/a&gt;连续调用3次fork(),共可以产生多少个进程？&lt;/h2&gt;&lt;p&gt;进程包括代码、数据和分配给进程的资源。fork()函数通过系统调用复制一个与原来进程几乎完全相同的进程。一个进程如果调用了fork()函数后，系统会先给新的进程分配资源，例如存储数据和代码的空间，然后把原来的所有值都复制到新的进程中个，只有少数值与原来的进程的值不同，相当于克隆了一个自己。&lt;/p&gt;
+&lt;figure class=&#34;highlight c++&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;gutter&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;13&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;comment&#34;&gt;//代码1-1&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;#&lt;span class=&#34;meta-keyword&#34;&gt;include&lt;/span&gt;&lt;span class=&#34;meta-string&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;#&lt;span class=&#34;meta-keyword&#34;&gt;include&lt;/span&gt;&lt;span class=&#34;meta-string&#34;&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;meta&#34;&gt;#&lt;span class=&#34;meta-keyword&#34;&gt;include&lt;/span&gt;&lt;span class=&#34;meta-string&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;function&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;title&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;params&#34;&gt;(&lt;span class=&#34;keyword&#34;&gt;void&lt;/span&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;function&#34;&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;int&lt;/span&gt; i;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;for&lt;/span&gt; (i = &lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span class=&#34;number&#34;&gt;3&lt;/span&gt;; i++) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        fork();&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        &lt;span class=&#34;built_in&#34;&gt;printf&lt;/span&gt;(&lt;span class=&#34;string&#34;&gt;&#34;-&#34;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;number&#34;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;按照&lt;em&gt;代码1-1&lt;/em&gt;所示，通过for循环，进行了3次fork，如下图所示，假设父进程为p3224，通过fork函数fork一次之后有父进程p3224与子进程p3225，在完成fork之后，系统通过pid来识别哪一个是子进程，哪一个是父进程。以此类推，经过3次fork之后，将产生8个进程。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xorde.com1.z0.glb.clouddn.com/forktree.gif&#34; alt=&#34;forktree&#34;&gt;&lt;br&gt;"><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick="$("#toc-footer").toggle();return false;"><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <li id="share"><a class="icon" href="#" onclick="$("#share-footer").toggle();return false;"><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li>
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick="$("#nav-footer").toggle();return false;"><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+    
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 Kezon Wang
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/gabithume">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+<!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+<link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+
+
+<!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-86660611-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Disqus Comments -->
+
+
